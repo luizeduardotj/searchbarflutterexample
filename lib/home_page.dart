@@ -77,7 +77,7 @@ class Search extends SearchDelegate<String> {
     List<String> suggestionList = [];
     query.isEmpty
         ? suggestionList = recents
-        : suggestionList = list.where((element) => element.startsWith(query));
+        : suggestionList.addAll(list.where((element) => element.contains(query)));
 
     return ListView.builder(
       itemCount: suggestionList.length,
