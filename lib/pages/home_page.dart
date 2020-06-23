@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  final List<String> list = List.generate(10, (index) => "Texto $index");
+  final List<String> list = List.generate(10, (index) => "Text $index");
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -35,21 +35,16 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class Search extends SearchDelegate<String> {
-  final List<String> list;
-  final List<String> recents = [];
-
-  Search(this.list);
-
+class Search extends SearchDelegate {
   @override
   List<Widget> buildActions(BuildContext context) {
-    return <IconButton>[
+    return <Widget>[
       IconButton(
         icon: Icon(Icons.close),
         onPressed: () {
-          query = '';
+          query = "";
         },
-      )
+      ),
     ];
   }
 
@@ -63,27 +58,44 @@ class Search extends SearchDelegate<String> {
     );
   }
 
+  String selectedResult = "";
+
   @override
   Widget buildResults(BuildContext context) {
     return Container(
       child: Center(
-        child: Text(query),
+        child: Text(selectedResult),
       ),
     );
   }
+
+  final List<String> listExample;
+  Search(this.listExample);
+
+  List<String> recentList = ["Text 4", "Text 3"];
 
   @override
   Widget buildSuggestions(BuildContext context) {
     List<String> suggestionList = [];
     query.isEmpty
-        ? suggestionList = recents
-        : suggestionList.addAll(list.where((element) => element.contains(query)));
+        ? suggestionList = recentList //In the true case
+        : suggestionList.addAll(listExample.where(
+            // In the false case
+            (element) => element.contains(query),
+          ));
 
     return ListView.builder(
       itemCount: suggestionList.length,
       itemBuilder: (context, index) {
         return ListTile(
-          title: Text(suggestionList[index]),
+          title: Text(
+            suggestionList[index],
+          ),
+          leading: query.isEmpty ? Icon(Icons.access_time) : SizedBox(),
+          onTap: (){
+            selectedResult = suggestionList[index];
+            showResults(context);
+          },
         );
       },
     );
